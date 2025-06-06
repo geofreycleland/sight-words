@@ -1,291 +1,337 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sight Words Practice</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-      height: 100vh;
-      background: url('background.png') no-repeat center center fixed;
-      background-size: cover;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: rgba(249, 240, 255, 0.9);
-      border: 3px solid #8a2be2;
-      border-radius: 15px;
-      padding: 20px;
-      box-shadow: 0 6px 12px rgba(138, 43, 226, 0.3);
-      width: 100%;
-      max-width: 700px;
-      position: relative;
-    }
-    h1 {
-      font-size: 2.5rem;
-      color: #4b0082;
-    }
-    #word {
-      font-size: 7rem;
-      font-weight: bold;
-      color: #8a2be2;
-      margin: 10px 0;
-    }
-    button {
-      padding: 15px 30px;
-      font-size: 1.5rem;
-      color: #fff;
-      background-color: #8a2be2;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      margin: 10px;
-    }
-    button:hover {
-      background-color: #5a189a;
-    }
-    .feedback {
-      font-size: 1.5rem;
-      margin: 10px 0;
-      color: #4b0082;
-    }
-    .counter {
-      position: absolute;
-      font-size: 1.2rem;
-      font-weight: bold;
-      padding: 10px;
-      background-color: rgba(249, 240, 255, 0.9);
-      border: 2px solid #8a2be2;
-      border-radius: 8px;
-      color: #4b0082;
-    }
-    #correctCounter {
-      bottom: 10px;
-      left: 10px;
-    }
-    #moneyCounter {
-      bottom: 10px;
-      right: 10px;
-    }
-    #micIcon {
-      display: none;
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      font-size: 2rem;
-      color: red;
-    }
-    #micToggleBtn {
-      background-color: #ffd166;
-      color: #000;
-      border: 2px solid #ff9f1c;
-      padding: 20px 40px;
-      border-radius: 50px;
-      font-weight: bold;
-      font-size: 2rem;
-      margin-top: 20px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-      display: none;
-    }
-    #micToggleBtn:hover {
-      background-color: #ffe599;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sight Words Practice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: url('background.png') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(249, 240, 255, 0.9);
+            border: 3px solid #8a2be2;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 6px 12px rgba(138, 43, 226, 0.3);
+            width: 100%;
+            max-width: 700px;
+            position: relative;
+        }
+        h1 {
+            font-size: 2.5rem;
+            color: #4b0082;
+        }
+        #word {
+            font-size: 7rem;
+            font-weight: bold;
+            color: #8a2be2;
+            margin: 10px 0;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            color: #fff;
+            background-color: #8a2be2;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover {
+            background-color: #5a189a;
+        }
+        .feedback {
+            font-size: 1.5rem;
+            margin: 10px 0;
+            color: #4b0082;
+        }
+        .counter {
+            position: absolute;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 10px;
+            background-color: rgba(249, 240, 255, 0.9);
+            border: 2px solid #8a2be2;
+            border-radius: 8px;
+            color: #4b0082;
+        }
+        #correctCounter {
+            bottom: 10px;
+            left: 10px;
+        }
+        #moneyCounter {
+            bottom: 10px;
+            right: 10px;
+        }
+        #micIcon {
+            display: none;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 2rem;
+            color: red;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.6; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        #talkBtn {
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            margin-top: 15px;
+            background-color: #4b0082;
+            color: white;
+            border: none;
+            border-radius: 8px;
+        }
+        #talkBtn.active {
+            background-color: #ff4d4d;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Sight Words Practice</h1>
-    <p>Say the word you see below:</p>
-    <div id="word">Press Start!</div>
-    <button id="startBtn">Start</button>
-    <button id="continueBtn" style="display:none;">Continue</button>
-    <button id="micToggleBtn">🎙️ Tap to Talk</button>
-    <div id="feedback" class="feedback"></div>
-    <div id="correctCounter" class="counter">Correct: 0</div>
-    <div id="moneyCounter" class="counter">Money Earned: $0.00</div>
-    <div id="micIcon">🎙️</div>
-  </div>
+    <div class="container">
+        <h1>Sight Words Practice</h1>
+        <p>Say the word you see below:</p>
+        <div id="word">Press Start!</div>
+        <button id="startBtn">Start</button>
+        <button id="stopBtn" style="display:none;">Stop</button>
+        <button id="continueBtn" style="display:none;">Continue</button>
+        <button id="talkBtn">Tap to Talk</button>
+        <div id="feedback" class="feedback"></div>
+        <div id="correctCounter" class="counter">Correct: 0</div>
+        <div id="moneyCounter" class="counter">Money Earned: $0.00</div>
+        <div id="micIcon">🎙️</div>
+    </div>
 
-  <script>
-    const words = [
-      "the", "of", "and", "a", "to", "in", "is", "you", "that", "it", "he",
-      "was", "for", "on", "are", "as", "with", "his", "they", "at",
-      "be", "this", "have", "from", "or", "one", "had", "by", "words",
-      "but", "not", "what", "all", "were", "we", "when", "your", "can",
-      "said", "there", "use", "an", "each", "which", "she", "do", "how",
-      "their", "if", "will", "up", "other", "about", "out", "many", "then",
-      "them", "these", "so", "some", "her", "would", "make", "like", "him",
-      "into", "time", "has", "look", "two", "more", "write", "go", "see",
-      "number", "no", "way", "could", "people", "my", "than", "first", "water",
-      "been", "called", "who", "oil", "its", "now", "find", "long", "down",
-      "day", "did", "get", "come", "made", "may", "part", "over"
-    ];
+    <script>
+        const wordsSet1 = [
+    "the", "of", "and", "a", "to", "in", "is", "you", "that", "it", "he",
+    "was", "for", "on", "are", "as", "with", "his", "they", "at", "be",
+    "this", "have", "from", "or", "one", "had", "by", "words", "but", "not",
+    "what", "all", "were", "we", "when", "your", "can", "said", "there",
+    "use", "an", "each", "which", "she", "do", "how", "their", "if", "will",
+    "up", "other", "about", "out", "many", "then", "them", "these", "so",
+    "some", "her", "would", "make", "like", "him", "into", "time", "has",
+    "look", "two", "more", "write", "go", "see", "number", "no", "way",
+    "could", "people", "my", "than", "first", "water", "been", "called",
+    "who", "oil", "its", "now", "find", "long", "down", "day", "did", "get",
+    "come", "made", "may", "part", "over"
+];
 
-    const homophones = {
-      "to": ["two", "too"],
-      "their": ["there", "they're"],
-      "there": ["their", "they're"],
-      "too": ["to", "two"],
-      "two": ["to", "too"],
-      "they're": ["their", "there"],
-      "would": ["wood"],
-      "be": ["b", "bee"],
-      "than": ["then", "van"],
-      "but": ["butt"],
-      "do": ["due"],
-      "by": ["bye"],
-      "for": ["four"],
-      "been": ["Ben"],
-      "Ben": ["been"],
-      "its": ["it's"],
-      "an": ["and"],
-      "write": ["right"],
-      "see": ["c", "sea"],
-      "one": ["1"],
-      "they": ["day"],
-      "will": ["well"]
-    };
+const wordsSet2 = [
+    "again", "animal", "answer", "away", "back", "because", "best", "better",
+    "big", "black", "blue", "boy", "bring", "brown", "buy", "carry", "clean",
+    "cold", "color", "could", "cut", "done", "draw", "drink", "eat", "eight",
+    "fall", "far", "fast", "find", "first", "five", "fly", "found", "full",
+    "funny", "give", "goes", "green", "grow", "hold", "hot", "hurt", "jump",
+    "keep", "kind", "laugh", "light", "long", "many", "much", "myself",
+    "never", "new", "nine", "off", "only", "own", "pick", "play", "pretty",
+    "pull", "push", "quick", "ran", "read", "ride", "round", "run", "seven",
+    "shall", "show", "sing", "sit", "six", "sleep", "small", "start", "stop",
+    "take", "ten", "thank", "them", "think", "those", "today", "together",
+    "try", "use", "very", "walk", "warm", "wash", "why", "wish", "work",
+    "write", "yellow", "yes"
+];
 
-    let usedWords = [];
-    let correctCount = 0;
-    let moneyEarned = 0;
-    let recognition;
-    let recognitionActive = false;
+let activeWords = wordsSet1;
 
-    const feedback = document.getElementById("feedback");
-    const correctCounter = document.getElementById("correctCounter");
-    const moneyCounter = document.getElementById("moneyCounter");
-    const wordDisplay = document.getElementById("word");
-    const micIcon = document.getElementById("micIcon");
-    const startBtn = document.getElementById("startBtn");
-    const continueBtn = document.getElementById("continueBtn");
-    const micToggleBtn = document.getElementById("micToggleBtn");
+const homophones = {
+    "to": ["two", "too"],
+    "their": ["there", "they're"],
+    "there": ["their", "they're"],
+    "too": ["to", "two"],
+    "two": ["to", "too"],
+    "they're": ["their", "there"],
+    "would": ["wood"],
+    "be": ["b", "bee"],
+    "than": ["then", "van"],
+    "but": ["butt"],
+    "do": ["due"],
+    "by": ["bye"],
+    "for": ["four"],
+    "been": ["Ben"],
+    "Ben": ["been"],
+    "its": ["it's"],
+    "an": ["and"],
+    "write": ["right"],
+    "see": ["c","sea"],
+    "one": ["1"],
+    "they": ["day"],
+    "will": ["well"]
+};
 
-    const correctSound = new Audio('correct-sound.mp3');
-    const wrongSound = new Audio('wrong-sound.mp3');
+let usedWords = [];
+let correctCount = 0;
+let moneyEarned = 0;
+let recognition;
+const correctSound = new Audio('correct-sound.mp3');
+const wrongSound = new Audio('wrong-sound.mp3');
 
-    function isCorrectWord(spokenWord, targetWord) {
-      spokenWord = spokenWord.toLowerCase();
-      return spokenWord === targetWord || homophones[targetWord]?.includes(spokenWord);
-    }
+const feedback = document.getElementById("feedback");
+const correctCounter = document.getElementById("correctCounter");
+const moneyCounter = document.getElementById("moneyCounter");
+const wordDisplay = document.getElementById("word");
+const micIcon = document.getElementById("micIcon");
+const startBtn = document.getElementById("startBtn");
+const stopBtn = document.getElementById("stopBtn");
+const continueBtn = document.getElementById("continueBtn");
+const talkBtn = document.getElementById("talkBtn");
 
-    function initSpeechRecognition() {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) {
+function isCorrectWord(spokenWord, targetWord) {
+    spokenWord = spokenWord.toLowerCase();
+    return spokenWord === targetWord || homophones[targetWord]?.includes(spokenWord);
+}
+
+function initSpeechRecognition() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
         alert("Speech recognition is not supported in your browser.");
         return;
-      }
+    }
 
-      recognition = new SpeechRecognition();
-      recognition.lang = "en-US";
-      recognition.interimResults = false;
-      recognition.continuous = true;
+    recognition = new SpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
+    recognition.continuous = false;
 
-      recognition.onresult = (event) => {
-        const spokenWord = event.results[event.resultIndex][0].transcript.trim();
+    recognition.onresult = (event) => {
+        const spokenWord = event.results[0][0].transcript.trim().toLowerCase();
         const currentWord = wordDisplay.textContent.toLowerCase();
 
         if (isCorrectWord(spokenWord, currentWord)) {
-          correctCount++;
-          moneyEarned += 0.01;
-          correctSound.play();
-          updateCounters();
-          recognition.stop();
-          recognitionActive = false;
-          micToggleBtn.textContent = "🎙️ Tap to Talk";
-          newRound();
+            correctCount++;
+            moneyEarned += 0.01;
+            correctSound.play();
+            updateCounters();
+            newRound();
         } else {
-          feedback.textContent = `Incorrect. You said "${spokenWord}". Try again!`;
-          feedback.style.color = "red";
-          wrongSound.play();
+            feedback.textContent = `Incorrect. You said "${spokenWord}". Try again!`;
+            feedback.style.color = "red";
+            wrongSound.play();
         }
-      };
+    };
 
-      recognition.onstart = () => toggleMicIcon(true);
-      recognition.onend = () => toggleMicIcon(false);
-      recognition.onerror = (event) => {
+    recognition.onstart = () => toggleMicIcon(true);
+    recognition.onend = () => toggleMicIcon(false);
+    recognition.onerror = (event) => {
         feedback.textContent = `Error: ${event.error}`;
         feedback.style.color = "red";
-      };
-    }
+    };
+}
 
-    micToggleBtn.addEventListener("click", () => {
-      if (!recognition) return;
+function toggleMicIcon(active) {
+    micIcon.style.display = active ? "block" : "none";
+}
 
-      if (recognitionActive) {
-        recognition.stop();
-        micToggleBtn.textContent = "🎙️ Tap to Talk";
-        recognitionActive = false;
-      } else {
-        recognition.start();
-        micToggleBtn.textContent = "🛑 Listening... Tap to Stop";
-        recognitionActive = true;
-      }
-    });
+function startGame() {
+    correctCount = 0;
+    moneyEarned = 0;
+    usedWords = [];
+    updateCounters();
+    initSpeechRecognition();
+    newRound();
+    startBtn.style.display = "none";
+    stopBtn.style.display = "inline-block";
+    continueBtn.style.display = "none";
+}
 
-    function startGame() {
-      correctCount = 0;
-      moneyEarned = 0;
-      usedWords = [];
-      updateCounters();
-      initSpeechRecognition();
-      newRound();
-      startBtn.style.display = "none";
-      continueBtn.style.display = "none";
-      micToggleBtn.style.display = "inline-block";
-    }
+function stopGame() {
+    if (recognition) recognition.stop();
+    feedback.textContent = "Game stopped.";
+    startBtn.style.display = "inline-block";
+    stopBtn.style.display = "none";
+    continueBtn.style.display = "inline-block";
+}
 
-    function continueGame() {
-      feedback.textContent = "";
-      continueBtn.style.display = "none";
-      micToggleBtn.style.display = "inline-block";
-    }
+function continueGame() {
+    feedback.textContent = "";
+    continueBtn.style.display = "none";
+    stopBtn.style.display = "inline-block";
+    newRound();
+}
 
-    function newRound() {
-      if (usedWords.length === words.length) {
+function newRound() {
+    if (usedWords.length === activeWords.length) {
         usedWords = [];
-      }
+    }
 
-      let newWord;
-      do {
-        newWord = words[Math.floor(Math.random() * words.length)];
-      } while (usedWords.includes(newWord));
+    let newWord;
+    do {
+        newWord = activeWords[Math.floor(Math.random() * activeWords.length)];
+    } while (usedWords.includes(newWord));
 
-      usedWords.push(newWord);
-      let countdown = 3;
+    usedWords.push(newWord);
 
-      const countdownInterval = setInterval(() => {
+    let countdown = 3;
+    const countdownInterval = setInterval(() => {
         wordDisplay.textContent = countdown;
         countdown--;
 
         if (countdown < 0) {
-          clearInterval(countdownInterval);
-          wordDisplay.textContent = newWord;
-          feedback.textContent = "";
+            clearInterval(countdownInterval);
+            wordDisplay.textContent = newWord;
         }
-      }, 1000);
+    }, 1000);
+}
+
+function updateCounters() {
+    correctCounter.textContent = `Correct: ${correctCount}`;
+    moneyCounter.textContent = `Money Earned: $${moneyEarned.toFixed(2)}`;
+}
+
+talkBtn.addEventListener("click", () => {
+    if (!recognition) {
+        initSpeechRecognition();
     }
 
-    function updateCounters() {
-      correctCounter.textContent = `Correct: ${correctCount}`;
-      moneyCounter.textContent = `Money Earned: $${moneyEarned.toFixed(2)}`;
-    }
+    talkBtn.classList.add("active");
+    recognition.start();
 
-    function toggleMicIcon(active) {
-      micIcon.style.display = active ? "block" : "none";
-    }
+    recognition.onend = () => {
+        talkBtn.classList.remove("active");
+    };
+});
 
-    startBtn.addEventListener("click", startGame);
-    continueBtn.addEventListener("click", continueGame);
-  </script>
+startBtn.addEventListener("click", startGame);
+stopBtn.addEventListener("click", stopGame);
+continueBtn.addEventListener("click", continueGame);
+
+// Word set switch buttons (you can add them in HTML if not yet added):
+const madsBtn = document.createElement("button");
+madsBtn.textContent = "Mads";
+madsBtn.onclick = () => {
+    activeWords = wordsSet1;
+    usedWords = [];
+    feedback.textContent = "Switched to Mads' words.";
+};
+
+const margotBtn = document.createElement("button");
+margotBtn.textContent = "Margot";
+margotBtn.onclick = () => {
+    activeWords = wordsSet2;
+    usedWords = [];
+    feedback.textContent = "Switched to Margot's words.";
+};
+
+document.querySelector(".container").appendChild(madsBtn);
+document.querySelector(".container").appendChild(margotBtn);
+
+    </script>
 </body>
 </html>
