@@ -121,18 +121,14 @@
     color: white;
     border: none;
     border-radius: 12px;
-    animation: pulse 1.5s infinite;
+    animation: none;
     box-shadow: 0 0 15px rgba(255, 105, 180, 0.6);
     position: relative;
 }
 
-#talkBtn::before {
-    content: "🎤 ";
-}
-
 #talkBtn.active {
     background-color: #ff4d4d;
-    animation: none;
+    animation: pulse 1.5s infinite;
 }
     </style>
 </head>
