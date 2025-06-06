@@ -317,18 +317,28 @@ function updateCounters() {
     moneyCounter.textContent = `Money Earned: $${moneyEarned.toFixed(2)}`;
 }
 
+let isListening = false;
+
 talkBtn.addEventListener("click", () => {
     if (!recognition) {
         initSpeechRecognition();
     }
 
-    talkBtn.classList.add("active");
-    recognition.start();
-
-    recognition.onend = () => {
+    if (!isListening) {
+        talkBtn.classList.add("active");
+        try {
+            recognition.start();
+            isListening = true;
+        } catch (e) {
+            console.warn("Speech recognition already started.");
+        }
+    } else {
+        recognition.stop();
         talkBtn.classList.remove("active");
-    };
+        isListening = false;
+    }
 });
+
 
 startBtn.addEventListener("click", startGame);
 stopBtn.addEventListener("click", stopGame);
@@ -336,16 +346,17 @@ continueBtn.addEventListener("click", continueGame);
 
 // Word set switch buttons (you can add them in HTML if not yet added):
 document.getElementById("level1Btn").addEventListener("click", () => {
-            currentWords = level1Words;
-            currentIndex = 0;
-            document.getElementById("word").innerText = "Level 1 Loaded!";
-        });
+    activeWords = wordsSet1;
+    usedWords = [];
+    document.getElementById("word").innerText = "Level 1 Loaded!";
+});
 
-        document.getElementById("level2Btn").addEventListener("click", () => {
-            currentWords = level2Words;
-            currentIndex = 0;
-            document.getElementById("word").innerText = "Level 2 Loaded!";
-        });
+document.getElementById("level2Btn").addEventListener("click", () => {
+    activeWords = wordsSet2;
+    usedWords = [];
+    document.getElementById("word").innerText = "Level 2 Loaded!";
+});
+
 
     </script>
 </body>
