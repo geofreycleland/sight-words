@@ -335,24 +335,17 @@ stopBtn.addEventListener("click", stopGame);
 continueBtn.addEventListener("click", continueGame);
 
 // Word set switch buttons (you can add them in HTML if not yet added):
-const level1Btn = document.createElement("button");
-level1Btn.textContent = "Level 1";
-level1Btn.onclick = () => {
-    activeWords = wordsSet1;
-    usedWords = [];
-    feedback.textContent = "Switched to Level 1 words.";
-};
+document.getElementById("level1Btn").addEventListener("click", () => {
+            currentWords = level1Words;
+            currentIndex = 0;
+            document.getElementById("word").innerText = "Level 1 Loaded!";
+        });
 
-const level2Btn = document.createElement("button");
-level2Btn.textContent = "Level 2";
-level2Btn.onclick = () => {
-    activeWords = wordsSet2;
-    usedWords = [];
-    feedback.textContent = "Switched to Level 2 words.";
-};
-
-document.querySelector(".container").appendChild(level1Btn);
-document.querySelector(".container").appendChild(level2Btn);
+        document.getElementById("level2Btn").addEventListener("click", () => {
+            currentWords = level2Words;
+            currentIndex = 0;
+            document.getElementById("word").innerText = "Level 2 Loaded!";
+        });
 
     </script>
 </body>
