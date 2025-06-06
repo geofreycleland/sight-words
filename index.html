@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sight Words Practice</title>
     <style>
+        html, body {
+    height: 100%;
+    overflow: hidden;
+    touch-action: none;
+}
         body {
             font-family: Arial, sans-serif;
             text-align: center;
@@ -109,17 +114,26 @@
             100% { transform: scale(1); opacity: 1; }
         }
         #talkBtn {
-            font-size: 1rem;
-            padding: 10px 20px;
-            margin-top: 15px;
-            background-color: #4b0082;
-            color: white;
-            border: none;
-            border-radius: 8px;
-        }
-        #talkBtn.active {
-            background-color: #ff4d4d;
-        }
+    font-size: 1.5rem;
+    padding: 20px 40px;
+    margin-top: 20px;
+    background-color: #ff69b4; /* Brighter pink */
+    color: white;
+    border: none;
+    border-radius: 12px;
+    animation: pulse 1.5s infinite;
+    box-shadow: 0 0 15px rgba(255, 105, 180, 0.6);
+    position: relative;
+}
+
+#talkBtn::before {
+    content: "🎤 ";
+}
+
+#talkBtn.active {
+    background-color: #ff4d4d;
+    animation: none;
+}
     </style>
 </head>
 <body>
@@ -329,6 +343,7 @@ talkBtn.addEventListener("click", () => {
         try {
             recognition.start();
             isListening = true;
+            talkBtn.textContent = "🎤 Listening...";
         } catch (e) {
             console.warn("Speech recognition already started.");
         }
@@ -336,6 +351,7 @@ talkBtn.addEventListener("click", () => {
         recognition.stop();
         talkBtn.classList.remove("active");
         isListening = false;
+        talkBtn.textContent = "🎤 Tap to Talk";
     }
 });
 
