@@ -84,6 +84,21 @@
       font-size: 2rem;
       color: red;
     }
+    #micToggleBtn {
+      background-color: #ffd166;
+      color: #000;
+      border: 2px solid #ff9f1c;
+      padding: 20px 40px;
+      border-radius: 50px;
+      font-weight: bold;
+      font-size: 2rem;
+      margin-top: 20px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      display: none;
+    }
+    #micToggleBtn:hover {
+      background-color: #ffe599;
+    }
   </style>
 </head>
 <body>
@@ -92,8 +107,8 @@
     <p>Say the word you see below:</p>
     <div id="word">Press Start!</div>
     <button id="startBtn">Start</button>
-    <button id="stopBtn" style="display:none;">Stop</button>
     <button id="continueBtn" style="display:none;">Continue</button>
+    <button id="micToggleBtn">🎙️ Tap to Talk</button>
     <div id="feedback" class="feedback"></div>
     <div id="correctCounter" class="counter">Correct: 0</div>
     <div id="moneyCounter" class="counter">Money Earned: $0.00</div>
@@ -101,19 +116,50 @@
   </div>
 
   <script>
-    const words = [ /* same word list as before */ "the", "of", "and", "a", "to", "in", "is", "you", "that", "it", "he", "was", "for", "on", "are", "as", "with", "his", "they", "at", "be", "this", "have", "from", "or", "one", "had", "by", "words", "but", "not", "what", "all", "were", "we", "when", "your", "can", "said", "there", "use", "an", "each", "which", "she", "do", "how", "their", "if", "will", "up", "other", "about", "out", "many", "then", "them", "these", "so", "some", "her", "would", "make", "like", "him", "into", "time", "has", "look", "two", "more", "write", "go", "see", "number", "no", "way", "could", "people", "my", "than", "first", "water", "been", "called", "who", "oil", "its", "now", "find", "long", "down", "day", "did", "get", "come", "made", "may", "part", "over" ];
+    const words = [
+      "the", "of", "and", "a", "to", "in", "is", "you", "that", "it", "he",
+      "was", "for", "on", "are", "as", "with", "his", "they", "at",
+      "be", "this", "have", "from", "or", "one", "had", "by", "words",
+      "but", "not", "what", "all", "were", "we", "when", "your", "can",
+      "said", "there", "use", "an", "each", "which", "she", "do", "how",
+      "their", "if", "will", "up", "other", "about", "out", "many", "then",
+      "them", "these", "so", "some", "her", "would", "make", "like", "him",
+      "into", "time", "has", "look", "two", "more", "write", "go", "see",
+      "number", "no", "way", "could", "people", "my", "than", "first", "water",
+      "been", "called", "who", "oil", "its", "now", "find", "long", "down",
+      "day", "did", "get", "come", "made", "may", "part", "over"
+    ];
 
     const homophones = {
-      "to": ["two", "too"], "their": ["there", "they're"], "there": ["their", "they're"], "too": ["to", "two"],
-      "two": ["to", "too"], "they're": ["their", "there"], "would": ["wood"], "be": ["b", "bee"],
-      "than": ["then", "van"], "but": ["butt"], "do": ["due"], "by": ["bye"], "for": ["four"],
-      "been": ["Ben"], "Ben": ["been"], "its": ["it's"], "an": ["and"], "write": ["right"],
-      "see": ["c", "sea"], "one": ["1"], "they": ["day"], "will": ["well"]
+      "to": ["two", "too"],
+      "their": ["there", "they're"],
+      "there": ["their", "they're"],
+      "too": ["to", "two"],
+      "two": ["to", "too"],
+      "they're": ["their", "there"],
+      "would": ["wood"],
+      "be": ["b", "bee"],
+      "than": ["then", "van"],
+      "but": ["butt"],
+      "do": ["due"],
+      "by": ["bye"],
+      "for": ["four"],
+      "been": ["Ben"],
+      "Ben": ["been"],
+      "its": ["it's"],
+      "an": ["and"],
+      "write": ["right"],
+      "see": ["c", "sea"],
+      "one": ["1"],
+      "they": ["day"],
+      "will": ["well"]
     };
 
     let usedWords = [];
     let correctCount = 0;
     let moneyEarned = 0;
+    let recognition;
+    let recognitionActive = false;
 
     const feedback = document.getElementById("feedback");
     const correctCounter = document.getElementById("correctCounter");
@@ -121,14 +167,11 @@
     const wordDisplay = document.getElementById("word");
     const micIcon = document.getElementById("micIcon");
     const startBtn = document.getElementById("startBtn");
-    const stopBtn = document.getElementById("stopBtn");
     const continueBtn = document.getElementById("continueBtn");
+    const micToggleBtn = document.getElementById("micToggleBtn");
 
     const correctSound = new Audio('correct-sound.mp3');
     const wrongSound = new Audio('wrong-sound.mp3');
-
-    let recognition;
-    let speechActive = false;
 
     function isCorrectWord(spokenWord, targetWord) {
       spokenWord = spokenWord.toLowerCase();
@@ -156,6 +199,9 @@
           moneyEarned += 0.01;
           correctSound.play();
           updateCounters();
+          recognition.stop();
+          recognitionActive = false;
+          micToggleBtn.textContent = "🎙️ Tap to Talk";
           newRound();
         } else {
           feedback.textContent = `Incorrect. You said "${spokenWord}". Try again!`;
@@ -165,15 +211,26 @@
       };
 
       recognition.onstart = () => toggleMicIcon(true);
-      recognition.onend = () => {
-        toggleMicIcon(false);
-        speechActive = false;
-      };
+      recognition.onend = () => toggleMicIcon(false);
       recognition.onerror = (event) => {
         feedback.textContent = `Error: ${event.error}`;
         feedback.style.color = "red";
       };
     }
+
+    micToggleBtn.addEventListener("click", () => {
+      if (!recognition) return;
+
+      if (recognitionActive) {
+        recognition.stop();
+        micToggleBtn.textContent = "🎙️ Tap to Talk";
+        recognitionActive = false;
+      } else {
+        recognition.start();
+        micToggleBtn.textContent = "🛑 Listening... Tap to Stop";
+        recognitionActive = true;
+      }
+    });
 
     function startGame() {
       correctCount = 0;
@@ -183,27 +240,20 @@
       initSpeechRecognition();
       newRound();
       startBtn.style.display = "none";
-      stopBtn.style.display = "inline-block";
       continueBtn.style.display = "none";
-    }
-
-    function stopGame() {
-      if (recognition) recognition.stop();
-      feedback.textContent = "Game stopped.";
-      startBtn.style.display = "inline-block";
-      stopBtn.style.display = "none";
-      continueBtn.style.display = "inline-block";
+      micToggleBtn.style.display = "inline-block";
     }
 
     function continueGame() {
       feedback.textContent = "";
       continueBtn.style.display = "none";
-      stopBtn.style.display = "inline-block";
-      if (recognition && !speechActive) recognition.start();
+      micToggleBtn.style.display = "inline-block";
     }
 
     function newRound() {
-      if (usedWords.length === words.length) usedWords = [];
+      if (usedWords.length === words.length) {
+        usedWords = [];
+      }
 
       let newWord;
       do {
@@ -216,9 +266,11 @@
       const countdownInterval = setInterval(() => {
         wordDisplay.textContent = countdown;
         countdown--;
+
         if (countdown < 0) {
           clearInterval(countdownInterval);
           wordDisplay.textContent = newWord;
+          feedback.textContent = "";
         }
       }, 1000);
     }
@@ -232,29 +284,8 @@
       micIcon.style.display = active ? "block" : "none";
     }
 
-    // Spacebar mic control
-    document.addEventListener("keydown", (e) => {
-      if (e.code === "Space" && !speechActive) {
-        if (recognition) {
-          recognition.start();
-          speechActive = true;
-        }
-        e.preventDefault();
-      }
-    });
-
-    document.addEventListener("keyup", (e) => {
-      if (e.code === "Space" && speechActive) {
-        if (recognition) recognition.stop();
-        speechActive = false;
-        e.preventDefault();
-      }
-    });
-
     startBtn.addEventListener("click", startGame);
-    stopBtn.addEventListener("click", stopGame);
     continueBtn.addEventListener("click", continueGame);
   </script>
 </body>
 </html>
-
