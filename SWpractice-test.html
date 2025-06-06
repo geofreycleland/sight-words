@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sight Words Practice</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: url('background.png') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(249, 240, 255, 0.9);
+      border: 3px solid #8a2be2;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 6px 12px rgba(138, 43, 226, 0.3);
+      width: 100%;
+      max-width: 700px;
+      position: relative;
+    }
+    h1 {
+      font-size: 2.5rem;
+      color: #4b0082;
+    }
+    #word {
+      font-size: 7rem;
+      font-weight: bold;
+      color: #8a2be2;
+      margin: 10px 0;
+    }
+    button {
+      padding: 15px 30px;
+      font-size: 1.5rem;
+      color: #fff;
+      background-color: #8a2be2;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 10px;
+    }
+    button:hover {
+      background-color: #5a189a;
+    }
+    .feedback {
+      font-size: 1.5rem;
+      margin: 10px 0;
+      color: #4b0082;
+    }
+    .counter {
+      position: absolute;
+      font-size: 1.2rem;
+      font-weight: bold;
+      padding: 10px;
+      background-color: rgba(249, 240, 255, 0.9);
+      border: 2px solid #8a2be2;
+      border-radius: 8px;
+      color: #4b0082;
+    }
+    #correctCounter {
+      bottom: 10px;
+      left: 10px;
+    }
+    #moneyCounter {
+      bottom: 10px;
+      right: 10px;
+    }
+    #micIcon {
+      display: none;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 2rem;
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Sight Words Practice</h1>
+    <p>Say the word you see below:</p>
+    <div id="word">Press Start!</div>
+    <button id="startBtn">Start</button>
+    <button id="stopBtn" style="display:none;">Stop</button>
+    <button id="continueBtn" style="display:none;">Continue</button>
+    <div id="feedback" class="feedback"></div>
+    <div id="correctCounter" class="counter">Correct: 0</div>
+    <div id="moneyCounter" class="counter">Money Earned: $0.00</div>
+    <div id="micIcon">🎙️</div>
+  </div>
+
+  <script>
+    const words = [ /* same word list as before */ "the", "of", "and", "a", "to", "in", "is", "you", "that", "it", "he", "was", "for", "on", "are", "as", "with", "his", "they", "at", "be", "this", "have", "from", "or", "one", "had", "by", "words", "but", "not", "what", "all", "were", "we", "when", "your", "can", "said", "there", "use", "an", "each", "which", "she", "do", "how", "their", "if", "will", "up", "other", "about", "out", "many", "then", "them", "these", "so", "some", "her", "would", "make", "like", "him", "into", "time", "has", "look", "two", "more", "write", "go", "see", "number", "no", "way", "could", "people", "my", "than", "first", "water", "been", "called", "who", "oil", "its", "now", "find", "long", "down", "day", "did", "get", "come", "made", "may", "part", "over" ];
+
+    const homophones = {
+      "to": ["two", "too"], "their": ["there", "they're"], "there": ["their", "they're"], "too": ["to", "two"],
+      "two": ["to", "too"], "they're": ["their", "there"], "would": ["wood"], "be": ["b", "bee"],
+      "than": ["then", "van"], "but": ["butt"], "do": ["due"], "by": ["bye"], "for": ["four"],
+      "been": ["Ben"], "Ben": ["been"], "its": ["it's"], "an": ["and"], "write": ["right"],
+      "see": ["c", "sea"], "one": ["1"], "they": ["day"], "will": ["well"]
+    };
+
+    let usedWords = [];
+    let correctCount = 0;
+    let moneyEarned = 0;
+
+    const feedback = document.getElementById("feedback");
+    const correctCounter = document.getElementById("correctCounter");
+    const moneyCounter = document.getElementById("moneyCounter");
+    const wordDisplay = document.getElementById("word");
+    const micIcon = document.getElementById("micIcon");
+    const startBtn = document.getElementById("startBtn");
+    const stopBtn = document.getElementById("stopBtn");
+    const continueBtn = document.getElementById("continueBtn");
+
+    const correctSound = new Audio('correct-sound.mp3');
+    const wrongSound = new Audio('wrong-sound.mp3');
+
+    let recognition;
+    let speechActive = false;
+
+    function isCorrectWord(spokenWord, targetWord) {
+      spokenWord = spokenWord.toLowerCase();
+      return spokenWord === targetWord || homophones[targetWord]?.includes(spokenWord);
+    }
+
+    function initSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert("Speech recognition is not supported in your browser.");
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.lang = "en-US";
+      recognition.interimResults = false;
+      recognition.continuous = true;
+
+      recognition.onresult = (event) => {
+        const spokenWord = event.results[event.resultIndex][0].transcript.trim();
+        const currentWord = wordDisplay.textContent.toLowerCase();
+
+        if (isCorrectWord(spokenWord, currentWord)) {
+          correctCount++;
+          moneyEarned += 0.01;
+          correctSound.play();
+          updateCounters();
+          newRound();
+        } else {
+          feedback.textContent = `Incorrect. You said "${spokenWord}". Try again!`;
+          feedback.style.color = "red";
+          wrongSound.play();
+        }
+      };
+
+      recognition.onstart = () => toggleMicIcon(true);
+      recognition.onend = () => {
+        toggleMicIcon(false);
+        speechActive = false;
+      };
+      recognition.onerror = (event) => {
+        feedback.textContent = `Error: ${event.error}`;
+        feedback.style.color = "red";
+      };
+    }
+
+    function startGame() {
+      correctCount = 0;
+      moneyEarned = 0;
+      usedWords = [];
+      updateCounters();
+      initSpeechRecognition();
+      newRound();
+      startBtn.style.display = "none";
+      stopBtn.style.display = "inline-block";
+      continueBtn.style.display = "none";
+    }
+
+    function stopGame() {
+      if (recognition) recognition.stop();
+      feedback.textContent = "Game stopped.";
+      startBtn.style.display = "inline-block";
+      stopBtn.style.display = "none";
+      continueBtn.style.display = "inline-block";
+    }
+
+    function continueGame() {
+      feedback.textContent = "";
+      continueBtn.style.display = "none";
+      stopBtn.style.display = "inline-block";
+      if (recognition && !speechActive) recognition.start();
+    }
+
+    function newRound() {
+      if (usedWords.length === words.length) usedWords = [];
+
+      let newWord;
+      do {
+        newWord = words[Math.floor(Math.random() * words.length)];
+      } while (usedWords.includes(newWord));
+
+      usedWords.push(newWord);
+      let countdown = 3;
+
+      const countdownInterval = setInterval(() => {
+        wordDisplay.textContent = countdown;
+        countdown--;
+        if (countdown < 0) {
+          clearInterval(countdownInterval);
+          wordDisplay.textContent = newWord;
+        }
+      }, 1000);
+    }
+
+    function updateCounters() {
+      correctCounter.textContent = `Correct: ${correctCount}`;
+      moneyCounter.textContent = `Money Earned: $${moneyEarned.toFixed(2)}`;
+    }
+
+    function toggleMicIcon(active) {
+      micIcon.style.display = active ? "block" : "none";
+    }
+
+    // Spacebar mic control
+    document.addEventListener("keydown", (e) => {
+      if (e.code === "Space" && !speechActive) {
+        if (recognition) {
+          recognition.start();
+          speechActive = true;
+        }
+        e.preventDefault();
+      }
+    });
+
+    document.addEventListener("keyup", (e) => {
+      if (e.code === "Space" && speechActive) {
+        if (recognition) recognition.stop();
+        speechActive = false;
+        e.preventDefault();
+      }
+    });
+
+    startBtn.addEventListener("click", startGame);
+    stopBtn.addEventListener("click", stopGame);
+    continueBtn.addEventListener("click", continueGame);
+  </script>
+</body>
+</html>
+
