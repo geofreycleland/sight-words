@@ -26,23 +26,41 @@
             border-radius: 15px;
             padding: 20px;
             box-shadow: 0 6px 12px rgba(138, 43, 226, 0.3);
-            width: 100%;
+            width: 90%;
             max-width: 700px;
             position: relative;
         }
+        .level-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .level-buttons button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            color: #fff;
+            background-color: #6a0dad;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .level-buttons button:hover {
+            background-color: #4b0082;
+        }
         h1 {
-            font-size: 2.5rem;
+            font-size: 2rem;
             color: #4b0082;
         }
         #word {
-            font-size: 7rem;
+            font-size: 4rem;
             font-weight: bold;
             color: #8a2be2;
             margin: 10px 0;
         }
         button {
             padding: 15px 30px;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             color: #fff;
             background-color: #8a2be2;
             border: none;
@@ -54,15 +72,15 @@
             background-color: #5a189a;
         }
         .feedback {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             margin: 10px 0;
             color: #4b0082;
         }
         .counter {
             position: absolute;
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: bold;
-            padding: 10px;
+            padding: 8px;
             background-color: rgba(249, 240, 255, 0.9);
             border: 2px solid #8a2be2;
             border-radius: 8px;
@@ -91,7 +109,7 @@
             100% { transform: scale(1); opacity: 1; }
         }
         #talkBtn {
-            font-size: 1.2rem;
+            font-size: 1rem;
             padding: 10px 20px;
             margin-top: 15px;
             background-color: #4b0082;
@@ -106,6 +124,10 @@
 </head>
 <body>
     <div class="container">
+        <div class="level-buttons">
+            <button id="level1Btn">Level 1</button>
+            <button id="level2Btn">Level 2</button>
+        </div>
         <h1>Sight Words Practice</h1>
         <p>Say the word you see below:</p>
         <div id="word">Press Start!</div>
